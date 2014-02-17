@@ -23,14 +23,11 @@ class RandomOrgClient
     protected $strApiKey = '';
 
     // RPC
-    protected $arrResponse = array();
     protected $numTimelimit = 300;
 
     function __construct()
     {
-        ini_set('memory_limit', '-1');
         $this->setTimelimit($this->numTimelimit);
-        $this->clear();
     }
 
     public function setApiKey($strApiKey)
@@ -308,14 +305,6 @@ class RandomOrgClient
     // JSON-RPC
     // -------------------------------------------------------------------------
 
-    /**
-     * cleanup
-     */
-    protected function clear()
-    {
-        $this->arrResponse = array();
-    }
-
     protected function setUrl($strUrl)
     {
         $this->strUrl = $strUrl;
@@ -336,8 +325,6 @@ class RandomOrgClient
      */
     protected function call($strMethod, $arrParams = null)
     {
-        $this->clear();
-
         $arrRequest = array();
         $arrRequest['jsonrpc'] = '2.0';
         $arrRequest['id'] = mt_rand(1, 999999);
@@ -348,8 +335,8 @@ class RandomOrgClient
 
         $strJson = $this->encodeJson($arrRequest);
         $strResponse = $this->post($strJson);
-        $this->arrResponse = $this->decodeJson($strResponse);
-        return $this->arrResponse;
+        $arrResponse = $this->decodeJson($strResponse);
+        return $arrResponse;
     }
 
     /**
