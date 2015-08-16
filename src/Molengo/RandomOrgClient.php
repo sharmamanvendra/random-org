@@ -17,67 +17,71 @@ class RandomOrgClient
 
     // The URL for invoking the API
     // https://api.random.org/json-rpc/1/
-    protected $strUrl = 'https://api.random.org/json-rpc/1/invoke';
-
+    protected $url = 'https://api.random.org/json-rpc/1/invoke';
     // Random.org API-KEY
     // https://api.random.org/api-keys
-    protected $strApiKey = '';
+    protected $apiKey = '';
+    // Http time limit
+    protected $timeLimit = 300;
 
-    // RPC
-    protected $numTimelimit = 300;
-
+    /**
+     * Constructor
+     */
     function __construct()
     {
-        $this->setTimelimit($this->numTimelimit);
+        $this->setTimelimit($this->timeLimit);
     }
 
-    public function setApiKey($strApiKey)
+    /**
+     * Set API key
+     * 
+     * @param string $apiKey
+     */
+    public function setApiKey($apiKey)
     {
-        $this->strApiKey = $strApiKey;
+        $this->apiKey = $apiKey;
     }
 
     /**
      * This method generates true random integers within a user-defined range.
      *
-     * @param int $numNumbers How many random integers you need.
+     * @param int $numbers How many random integers you need.
      * Must be within the [1,1000000000] range.
-     * @param int $numMin The lower boundary for the range from which the
+     * @param int $min The lower boundary for the range from which the
      * random numbers will be picked.
      * Must be within the [-1000000000,1000000000] range.
-     * @param int $numMax The upper boundary for the range from which the
+     * @param int $max The upper boundary for the range from which the
      * random numbers will be picked.
      * Must be within the [-1000000000,1000000000] range.
-     * @param type $boolReplacement Specifies whether the random numbers
+     * @param type $replacement Specifies whether the random numbers
      * should be picked with replacement. The default (true) will cause the
      * numbers to be picked with replacement, i.e., the resulting numbers
      * may contain duplicate values (like a series of dice rolls).
      * If you want the numbers picked to be unique (like raffle tickets
      * drawn from a container), set this value to false.
-     * @param type $numBase Specifies the base that will be used to display
+     * @param type $base Specifies the base that will be used to display
      * the numbers. Values allowed are 2, 8, 10 and 16. 
      * @return array
      */
-    public function generateIntegers($numNumbers, $numMin, $numMax, $boolReplacement = true, $numBase = 10)
+    public function generateIntegers($numbers, $min, $max, $replacement = true, $base = 10)
     {
-        $arrParams = array();
-        $arrParams['apiKey'] = $this->strApiKey;
-        $arrParams['n'] = $numNumbers;
-        $arrParams['min'] = $numMin;
-        $arrParams['max'] = $numMax;
-        $arrParams['replacement'] = $boolReplacement;
-        $arrParams['base'] = $numBase;
-        $arrResponse = $this->call('generateIntegers', $arrParams);
+        $params = array();
+        $params['apiKey'] = $this->apiKey;
+        $params['n'] = $numbers;
+        $params['min'] = $min;
+        $params['max'] = $max;
+        $params['replacement'] = $replacement;
+        $params['base'] = $base;
+        $response = $this->call('generateIntegers', $params);
 
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
-
-        $arrReturn = array();
-        if (isset($arrResponse['result']['random']['data'])) {
-            $arrReturn = $arrResponse['result']['random']['data'];
+        $result = array();
+        if (isset($response['result']['random']['data'])) {
+            $result = $response['result']['random']['data'];
         }
-
-        return $arrReturn;
+        return $result;
     }
 
     /**
@@ -85,11 +89,11 @@ class RandomOrgClient
      * distribution across the [0,1] interval with a user-defined number of
      * decimal places.
      *
-     * @param int $numNumbers How many random decimal fractions you need.
+     * @param int $numbers How many random decimal fractions you need.
      * Must be within the [1,10000] range.
-     * @param int $numDecimalPlaces The number of decimal places to use.
+     * @param int $decimalPlaces The number of decimal places to use.
      * Must be within the [1,20] range.
-     * @param bool $boolReplacement Specifies whether the random numbers should
+     * @param bool $replacement Specifies whether the random numbers should
      * be picked with replacement. The default (true) will cause the numbers to
      * be picked with replacement, i.e., the resulting numbers may contain
      * duplicate values (like a series of dice rolls).
@@ -98,25 +102,23 @@ class RandomOrgClient
      * @return array
      * @throws \Exception
      */
-    public function generateDecimalFractions($numNumbers, $numDecimalPlaces, $boolReplacement = true)
+    public function generateDecimalFractions($numbers, $decimalPlaces, $replacement = true)
     {
-        $arrParams = array();
-        $arrParams['apiKey'] = $this->strApiKey;
-        $arrParams['n'] = $numNumbers;
-        $arrParams['decimalPlaces'] = $numDecimalPlaces;
-        $arrParams['replacement'] = $boolReplacement;
-        $arrResponse = $this->call('generateDecimalFractions', $arrParams);
-        //print_r($arrResponse);
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
-        }
+        $params = array();
+        $params['apiKey'] = $this->apiKey;
+        $params['n'] = $numbers;
+        $params['decimalPlaces'] = $decimalPlaces;
+        $params['replacement'] = $replacement;
+        $response = $this->call('generateDecimalFractions', $params);
 
-        $arrReturn = array();
-        if (isset($arrResponse['result']['random']['data'])) {
-            $arrReturn = $arrResponse['result']['random']['data'];
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
-
-        return $arrReturn;
+        $result = array();
+        if (isset($response['result']['random']['data'])) {
+            $result = $response['result']['random']['data'];
+        }
+        return $result;
     }
 
     /**
@@ -125,277 +127,273 @@ class RandomOrgClient
      * Transform to generate the Gaussian distribution from uniformly
      * distributed numbers.
      *
-     * @param int $numNumbers How many random numbers you need.
+     * @param int $numbers How many random numbers you need.
      * Must be within the [1,10000] range.
-     * @param int $numMean The distribution's mean.
+     * @param int $mean The distribution's mean.
      * Must be within the [-1000000,1000000] range.
-     * @param int $numStandardDeviation The distribution's standard deviation.
+     * @param int $standardDeviation The distribution's standard deviation.
      * Must be within the [-1000000,1000000] range.
-     * @param int $numSignificantDigits The number of significant digits to use.
+     * @param int $significantDigits The number of significant digits to use.
      * Must be within the [2,20] range.
      * @return array
      * @throws \Exception
      */
-    public function generateGaussians($numNumbers, $numMean, $numStandardDeviation, $numSignificantDigits)
+    public function generateGaussians($numbers, $mean, $standardDeviation, $significantDigits)
     {
-        $arrParams = array();
-        $arrParams['apiKey'] = $this->strApiKey;
-        $arrParams['n'] = $numNumbers;
-        $arrParams['mean'] = $numMean;
-        $arrParams['standardDeviation'] = $numStandardDeviation;
-        $arrParams['significantDigits'] = $numSignificantDigits;
+        $params = array();
+        $params['apiKey'] = $this->apiKey;
+        $params['n'] = $numbers;
+        $params['mean'] = $mean;
+        $params['standardDeviation'] = $standardDeviation;
+        $params['significantDigits'] = $significantDigits;
 
-        $arrResponse = $this->call('generateGaussians', $arrParams);
-        //print_r($arrResponse);
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
+        $response = $this->call('generateGaussians', $params);
+
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
-
-        $arrReturn = array();
-        if (isset($arrResponse['result']['random']['data'])) {
-            $arrReturn = $arrResponse['result']['random']['data'];
+        $result = array();
+        if (isset($response['result']['random']['data'])) {
+            $result = $response['result']['random']['data'];
         }
-
-        return $arrReturn;
+        return $result;
     }
 
     /**
      * This method generates true random strings.
      *
-     * @param int $numNumbers How many random strings you need.
+     * @param int $numbers How many random strings you need.
      * Must be within the [1,10000] range.
-     * @param int $numLength The length of each string. Must be within
+     * @param int $length The length of each string. Must be within
      * the [1,20] range. All strings will be of the same length
-     * @param int $strCharacters A string that contains the set of characters
+     * @param int $characters A string that contains the set of characters
      * that are allowed to occur in the random strings.
      * The maximum number of characters is 80.
-     * @param bool $boolReplacement (true = with duplicates, false = unique)
+     * @param bool $replacement (true = with duplicates, false = unique)
      * @return array
      * @throws \Exception
      */
-    public function generateStrings($numNumbers, $numLength, $strCharacters = null, $boolReplacement = true)
+    public function generateStrings($numbers, $length, $characters = null, $replacement = true)
     {
 
-        if ($strCharacters === null) {
+        if ($characters === null) {
             // default
-            $strCharacters = 'abcdefghijklmnopqrstuvwxyz';
-            $strCharacters .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $strCharacters .= '0123456789';
+            $characters = 'abcdefghijklmnopqrstuvwxyz';
+            $characters .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $characters .= '0123456789';
         }
 
-        $arrParams = array();
-        $arrParams['apiKey'] = $this->strApiKey;
-        $arrParams['n'] = $numNumbers;
-        $arrParams['length'] = $numLength;
-        $arrParams['characters'] = $strCharacters;
-        $arrParams['replacement'] = $boolReplacement;
+        $params = array();
+        $params['apiKey'] = $this->apiKey;
+        $params['n'] = $numbers;
+        $params['length'] = $length;
+        $params['characters'] = $characters;
+        $params['replacement'] = $replacement;
 
-        $arrResponse = $this->call('generateStrings', $arrParams);
-        //print_r($arrResponse);
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
+        $response = $this->call('generateStrings', $params);
+
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
-
-        $arrReturn = array();
-        if (isset($arrResponse['result']['random']['data'])) {
-            $arrReturn = $arrResponse['result']['random']['data'];
+        $result = array();
+        if (isset($response['result']['random']['data'])) {
+            $result = $response['result']['random']['data'];
         }
-
-        return $arrReturn;
+        return $result;
     }
 
     /**
      * This method generates version 4 true random Universally Unique 
      * IDentifiers (UUIDs) in accordance with section 4.4 of RFC 4122. 
      * 
-     * @param int $numNumbers
+     * @param int $numbers
      * @return array
      * @throws \Exception
      */
-    public function generateUUIDs($numNumbers)
+    public function generateUUIDs($numbers)
     {
+        $params = array();
+        $params['apiKey'] = $this->apiKey;
+        $params['n'] = $numbers;
 
-        $arrParams = array();
-        $arrParams['apiKey'] = $this->strApiKey;
-        $arrParams['n'] = $numNumbers;
+        $response = $this->call('generateUUIDs', $params);
 
-        $arrResponse = $this->call('generateUUIDs', $arrParams);
-
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
-
-        $arrReturn = array();
-        if (isset($arrResponse['result']['random']['data'])) {
-            $arrReturn = $arrResponse['result']['random']['data'];
+        $result = array();
+        if (isset($response['result']['random']['data'])) {
+            $result = $response['result']['random']['data'];
         }
-
-        return $arrReturn;
+        return $result;
     }
 
     /**
      * This method generates Binary Large Objects (BLOBs)
      * containing true random data.
      *
-     * @param int $numNumbers How many random blobs you need.
+     * @param int $numbers How many random blobs you need.
      * Must be within the [1,100] range.
-     * @param int $numSize The size of each blob, measured in bits.
+     * @param int $size The size of each blob, measured in bits.
      * Must be within the [1,1048576] range and must be divisible by 8.
-     * @param string $strFormat Specifies the format in which the blobs will
+     * @param string $format Specifies the format in which the blobs will
      * be returned. Values allowed are base64 and hex.
      * @return array
      * @throws \Exception
      */
-    public function generateBlobs($numNumbers, $numSize, $strFormat = 'base64')
+    public function generateBlobs($numbers, $size, $format = 'base64')
     {
+        $params = array();
+        $params['apiKey'] = $this->apiKey;
+        $params['n'] = $numbers;
+        $params['size'] = $size;
+        $params['format'] = $format;
 
-        $arrParams = array();
-        $arrParams['apiKey'] = $this->strApiKey;
-        $arrParams['n'] = $numNumbers;
-        $arrParams['size'] = $numSize;
-        $arrParams['format'] = $strFormat;
+        $response = $this->call('generateBlobs', $params);
 
-        $arrResponse = $this->call('generateBlobs', $arrParams);
-
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
 
-        $arrReturn = array();
-        if (isset($arrResponse['result']['random']['data'])) {
-            $arrReturn = $arrResponse['result']['random']['data'];
+        $result = array();
+        if (isset($response['result']['random']['data'])) {
+            $result = $response['result']['random']['data'];
         }
-
-        return $arrReturn;
+        return $result;
     }
 
     /**
      * This method returns information related to the the 
      * usage of a given API key. 
      *
-     * @param type $strApiKey (optional) Your API key,
+     * @param type $apiKey (optional) Your API key,
      * which is used to track the true random bit usage for your client.
      *
      * @return array
      * @throws \Exception
      */
-    public function getUsage($strApiKey = null)
+    public function getUsage($apiKey = null)
     {
-        $arrParams = array();
+        $params = array();
 
-        if ($strApiKey === null) {
-            $strApiKey = $this->strApiKey;
+        if ($apiKey === null) {
+            $apiKey = $this->apiKey;
         }
-        $arrParams['apiKey'] = $strApiKey;
+        $params['apiKey'] = $apiKey;
 
-        $arrResponse = $this->call('getUsage', $arrParams);
+        $response = $this->call('getUsage', $params);
 
-        if (isset($arrResponse['error']['message'])) {
-            throw new \Exception($arrResponse['error']['message']);
-        }
-
-        $arrReturn = array();
-        if (isset($arrResponse['result'])) {
-            $arrReturn = $arrResponse['result'];
+        if (isset($response['error']['message'])) {
+            throw new \Exception($response['error']['message']);
         }
 
-        return $arrReturn;
+        $result = array();
+        if (isset($response['result'])) {
+            $result = $response['result'];
+        }
+
+        return $result;
     }
 
-    // -------------------------------------------------------------------------
-    // JSON-RPC
-    // -------------------------------------------------------------------------
-
-    protected function setUrl($strUrl)
+    /**
+     * Set endpoint URL
+     * 
+     * @param string $url url
+     */
+    protected function setUrl($url)
     {
-        $this->strUrl = $strUrl;
+        $this->url = $url;
     }
 
-    protected function setTimelimit($numTimelimit)
+    /**
+     * Set time limit
+     * 
+     * @param int $timeLimit
+     */
+    protected function setTimelimit($timeLimit)
     {
-        $this->numTimelimit = $numTimelimit;
-        set_time_limit($this->numTimelimit);
+        $this->timeLimit = $timeLimit;
+        set_time_limit($this->timeLimit);
     }
 
     /**
      * Http Json-RPC Request ausfuehren
      *
-     * @param string $strMethod
-     * @param array $arrParams
+     * @param string $method
+     * @param array $params
      * @return array
      */
-    protected function call($strMethod, $arrParams = null)
+    protected function call($method, $params = null)
     {
-        $arrRequest = array();
-        $arrRequest['jsonrpc'] = '2.0';
-        $arrRequest['id'] = mt_rand(1, 999999);
-        $arrRequest['method'] = $strMethod;
-        if (isset($arrParams)) {
-            $arrRequest['params'] = $arrParams;
+        $request = array();
+        $request['jsonrpc'] = '2.0';
+        $request['id'] = mt_rand(1, 999999);
+        $request['method'] = $method;
+        if (isset($params)) {
+            $request['params'] = $params;
         }
 
-        $strJson = $this->encodeJson($arrRequest);
-        $strResponse = $this->post($strJson);
-        $arrResponse = $this->decodeJson($strResponse);
-        return $arrResponse;
+        $json = $this->encodeJson($request);
+        $responseData = $this->post($json);
+        $response = $this->decodeJson($responseData);
+        return $response;
     }
 
     /**
      * HTTP POST-Request
      *
-     * @param string $strContent
+     * @param string $content content data
      * @return string
      */
-    protected function post($strContent = '')
+    protected function post($content = '')
     {
-        $strReturn = '';
-
-        $arrDefaults = array(
+        $defaults = array(
             CURLOPT_POST => 1,
             CURLOPT_HEADER => 0,
-            CURLOPT_URL => $this->strUrl,
+            CURLOPT_URL => $this->url,
             CURLOPT_FRESH_CONNECT => 1,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FORBID_REUSE => 1,
-            CURLOPT_TIMEOUT => $this->numTimelimit,
+            CURLOPT_TIMEOUT => $this->timeLimit,
             CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
-            CURLOPT_POSTFIELDS => $strContent,
+            CURLOPT_POSTFIELDS => $content,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_SSL_VERIFYPEER => false
         );
 
         $ch = curl_init();
-        curl_setopt_array($ch, $arrDefaults);
+        curl_setopt_array($ch, $defaults);
 
-        $strReturn = curl_exec($ch);
-        $numHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $result = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($numHttpCode < 200 || $numHttpCode >= 300) {
-            $numError = curl_errno($ch);
-            $strError = curl_error($ch);
-            $strText = trim(strip_tags($strReturn));
+        if ($httpCode < 200 || $httpCode >= 300) {
+            $errorCode = curl_errno($ch);
+            $errorMsg = curl_error($ch);
+            $text = trim(strip_tags($result));
             curl_close($ch);
-            throw new \Exception(trim("HTTP Error [$numHttpCode] $strError. $strText"), $numError);
+            throw new \Exception(trim("HTTP Error [$httpCode] $errorMsg. $text"), $errorCode);
         }
 
         curl_close($ch);
-        return $strReturn;
+        return $result;
     }
 
     /**
-     * json encoder
+     * Json encoder
+     * 
      * @param array $array
      * @param int $options
      * @return string
      */
     protected function encodeJson($array, $options = 0)
     {
-        $str = json_encode($this->encodeUtf8($array), $options);
-        return $str;
+        return json_encode($this->encodeUtf8($array), $options);
     }
 
     /**
-     * json decoder
+     * Json decoder
+     * 
      * @param string $strJson
      * @return array
      */
@@ -406,7 +404,8 @@ class RandomOrgClient
 
     /**
      * Encodes an ISO string to UTF-8
-     * @param mixed $array
+     * 
+     * @param mixed $str
      * @return mixed
      */
     protected function encodeUtf8($str)
@@ -416,8 +415,8 @@ class RandomOrgClient
         }
 
         if (is_array($str)) {
-            foreach ($str as $strKey => $strVal) {
-                $str[$strKey] = $this->encodeUtf8($strVal);
+            foreach ($str as $key => $value) {
+                $str[$key] = $this->encodeUtf8($value);
             }
             return $str;
         } else {
@@ -428,5 +427,4 @@ class RandomOrgClient
             }
         }
     }
-
 }
