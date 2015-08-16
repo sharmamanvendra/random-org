@@ -1,2 +1,5 @@
-/nbproject/
-/_doc/
+.idea/
+composer.lock
+nbproject/
+vendor/
+build/
