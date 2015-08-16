@@ -1,15 +1,16 @@
 <?php
 
+namespace Molengo;
+
 /**
  * RANDOM.ORG
  * JSON-RPC API – Release 1
  * https://api.random.org/json-rpc/1/
  *
- * @version 2014.02.17
- * @copyright (c) 2014, dopitz
- * @link https://github.com/odan
- * @author dopitz <odan@users.noreply.github.com>
- * @license MIT
+ * @author odan
+ * @copyright 2014-2016 odan
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ * @link https://github.com/odan/random-org
  */
 class RandomOrgClient
 {
@@ -68,7 +69,7 @@ class RandomOrgClient
         $arrResponse = $this->call('generateIntegers', $arrParams);
 
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -95,7 +96,7 @@ class RandomOrgClient
      * If you want the numbers picked to be unique (like raffle tickets
      * drawn from a container), set this value to false.
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateDecimalFractions($numNumbers, $numDecimalPlaces, $boolReplacement = true)
     {
@@ -107,7 +108,7 @@ class RandomOrgClient
         $arrResponse = $this->call('generateDecimalFractions', $arrParams);
         //print_r($arrResponse);
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -133,7 +134,7 @@ class RandomOrgClient
      * @param int $numSignificantDigits The number of significant digits to use.
      * Must be within the [2,20] range.
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateGaussians($numNumbers, $numMean, $numStandardDeviation, $numSignificantDigits)
     {
@@ -147,7 +148,7 @@ class RandomOrgClient
         $arrResponse = $this->call('generateGaussians', $arrParams);
         //print_r($arrResponse);
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -170,7 +171,7 @@ class RandomOrgClient
      * The maximum number of characters is 80.
      * @param bool $boolReplacement (true = with duplicates, false = unique)
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateStrings($numNumbers, $numLength, $strCharacters = null, $boolReplacement = true)
     {
@@ -192,7 +193,7 @@ class RandomOrgClient
         $arrResponse = $this->call('generateStrings', $arrParams);
         //print_r($arrResponse);
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -209,7 +210,7 @@ class RandomOrgClient
      * 
      * @param int $numNumbers
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateUUIDs($numNumbers)
     {
@@ -221,7 +222,7 @@ class RandomOrgClient
         $arrResponse = $this->call('generateUUIDs', $arrParams);
 
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -243,7 +244,7 @@ class RandomOrgClient
      * @param string $strFormat Specifies the format in which the blobs will
      * be returned. Values allowed are base64 and hex.
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateBlobs($numNumbers, $numSize, $strFormat = 'base64')
     {
@@ -257,7 +258,7 @@ class RandomOrgClient
         $arrResponse = $this->call('generateBlobs', $arrParams);
 
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -276,7 +277,7 @@ class RandomOrgClient
      * which is used to track the true random bit usage for your client.
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function getUsage($strApiKey = null)
     {
@@ -290,7 +291,7 @@ class RandomOrgClient
         $arrResponse = $this->call('getUsage', $arrParams);
 
         if (isset($arrResponse['error']['message'])) {
-            throw new Exception($arrResponse['error']['message']);
+            throw new \Exception($arrResponse['error']['message']);
         }
 
         $arrReturn = array();
@@ -374,7 +375,7 @@ class RandomOrgClient
             $strError = curl_error($ch);
             $strText = trim(strip_tags($strReturn));
             curl_close($ch);
-            throw new Exception(trim("HTTP Error [$numHttpCode] $strError. $strText"), $numError);
+            throw new \Exception(trim("HTTP Error [$numHttpCode] $strError. $strText"), $numError);
         }
 
         curl_close($ch);

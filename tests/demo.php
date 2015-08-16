@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$random = new RandomOrgClient();
+$random = new \Molengo\RandomOrgClient();
 
 // Get a API key: https://api.random.org/api-keys
 $random->setApiKey('');
@@ -48,5 +48,3 @@ var_dump($arrRandomBlobs);
 echo "getUsage<br>\n";
 $arrUsage = $random->getUsage();
 var_dump($arrUsage);
-
-exit;
