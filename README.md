@@ -9,7 +9,7 @@ https://api.random.org/json-rpc/1/<br>
 
 Example:
 ```php
-$random = new RandomOrgClient();
+$random = new \Molengo\RandomOrgClient();
 
 // Get a API key: https://api.random.org/api-keys
 $random->setApiKey('');
