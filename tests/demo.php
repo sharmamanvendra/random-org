@@ -2,10 +2,10 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$random = new \Molengo\RandomOrgClient();
+$random = new \Odan\Random\RandomOrgClient();
 
 // Get a API key: https://api.random.org/api-keys
-$random->setApiKey('');
+$random->setApiKey('cedfd156-3c49-4aaa-9e5e-0cf9a5a81b1e');
 
 echo "generateIntegers (1-100)<br>\n";
 $arrRandomInt = $random->generateIntegers(5, 1, 100);
