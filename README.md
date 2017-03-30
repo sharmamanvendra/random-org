@@ -1,4 +1,4 @@
-random-org-php
+Random.org API client for PHP
 ==============
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
