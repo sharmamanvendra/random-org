@@ -1,23 +1,45 @@
 {
     "name": "odan/random-org",
     "type": "library",
-    "description": "Random.org JSON-RPC Client implementation for PHP",
-    "keywords": ["library"],
-    "homepage": "http://github.com/odan/random-org",
+    "description": "Random.org client implementation for PHP",
+    "keywords": [
+        "random",
+        "random.org",
+        "numbers"
+    ],
+    "homepage": "https://github.com/odan/random-org",
     "license": "MIT",
     "authors": [
         {
             "name": "odan",
-            "email": "support@molengo.com",
-            "homepage": "http://www.molengo.com"
+            "email": "odan@users.noreply.github.com",
+            "homepage": "https://github.com/odan/session",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=5.3"
+        "php": ">=7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0"
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-clover build/logs/clover.xml --coverage-html build/coverage",
+        "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
+        "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit -n --no-patch 1 src tests"
     },
     "autoload": {
         "psr-4": {
-            "Odan\\Random\\": "src/Random"
+            "Odan\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Odan\\Test\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
