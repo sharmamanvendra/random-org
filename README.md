@@ -35,6 +35,11 @@ var_dump($integers);
 
 ```
 
+## Todo
+
+* Signed Methods
+* More documentation
+
 ## Testing
 
 ``` bash
